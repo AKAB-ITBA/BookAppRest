@@ -36,7 +36,6 @@ public class BookController {
     @PostMapping
     public void createBook(@RequestBody CreateBookDto createBookDto) {
         bookService.createBook(createBookDto);
-        //test addAuthorToBook
     }
 
     @PutMapping("/{id}")
@@ -44,9 +43,9 @@ public class BookController {
         bookService.editBook(id, editBookDto);
     }
 
-    @GetMapping("/searchBook")
-    public List<BookDto> searchBook(@RequestParam("value") String value,
-                                    @RequestParam("param") String param) {
+    @GetMapping("/search-book")
+    public List<BookDto> searchBook(@RequestParam String value,
+                                    @RequestParam String param) {
         return bookService.searchBook(value, param);
     }
 }

@@ -1,6 +1,7 @@
 package org.example.bookapprest.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.bookapprest.mapper.BookMapper;
 import org.example.bookapprest.model.dto.AuthorDto;
 import org.example.bookapprest.model.dto.BookDto;
 import org.example.bookapprest.model.dto.CreateBookDto;
@@ -34,7 +35,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto getBookById(Integer id) {
         Book book = findBookById(id);
-        return toBookDto(book);
+        return BookMapper.INSTANCE.toBookDto(book);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class BookServiceImpl implements BookService {
         List<Book> books = new ArrayList<>();
         String resultValue = "%".concat(value).concat("%");
 
-        if (param.equals("title")) {
+        if ("title".equals(param)) {
             books = bookRepositoryJpa.findByTitleLike(resultValue);
         } else if (param.equals("genre")) {
             books = bookRepositoryJpa.findByGenreLike(resultValue);
@@ -77,14 +78,14 @@ public class BookServiceImpl implements BookService {
             return null;
         } else {
             return bookDtoList;
-        }
+        } //criteria api
     }
 
     private List<BookDto> toBookDtoList(List<Book> books) {
-        return books.stream().map(this::toBookDto).toList();
+        return books.stream().map(BookMapper.INSTANCE::toBookDto).toList();
     }
 
-    public BookDto toBookDto(Book book) {
+   /* private BookDto toBookDto(Book book) {
         BookDto bookDto = new BookDto();
         bookDto.setTitle(book.getTitle());
         bookDto.setIsbn(book.getIsbn());
@@ -94,7 +95,7 @@ public class BookServiceImpl implements BookService {
         bookDto.setPublishedDate(book.getPublishedDate());
         bookDto.setAuthors(toAuthorDtoList(book.getAuthors()));
         return bookDto;
-    }
+    }*/
 
     private List<AuthorDto> toAuthorDtoList(List<Author> authors) {
         return authors.stream().map(this::toAuthorDto).toList();

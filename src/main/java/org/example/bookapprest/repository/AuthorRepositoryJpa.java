@@ -11,7 +11,7 @@ public interface AuthorRepositoryJpa extends JpaRepository<Author, Integer> {
 
     Author findAuthorByAuthorName(String authorName);
 
-    Author findAuthorById(int id);
+    //Author findAuthorById(int id);
 
     List<Author> findByAuthorNameLike(String authorName);
 }

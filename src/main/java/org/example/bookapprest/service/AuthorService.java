@@ -5,13 +5,12 @@ import org.example.bookapprest.model.dto.AuthorDto;
 import org.example.bookapprest.model.dto.BookDto;
 import org.example.bookapprest.model.dto.EditAuthorDto;
 import org.example.bookapprest.model.entity.Author;
-import org.example.bookapprest.model.entity.Book;
 
 import java.util.List;
 
 public interface AuthorService {
 
-    List<AuthorDto> getAllAuthors();
+    List<AuthorDto> getAuthors();
 
     Author saveAuthor(Author author);
 
@@ -21,7 +20,7 @@ public interface AuthorService {
 
     String deleteAuthor(Integer id);
 
-    AuthorDto editAuthorName(EditAuthorDto editAuthorDto);
+    AuthorDto editAuthorName(Integer id, EditAuthorDto editAuthorDto);
 
     List<AuthorDto> searchAuthorByAuthorName(AuthorDto authorDto);
 }

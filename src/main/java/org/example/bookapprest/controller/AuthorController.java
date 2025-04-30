@@ -16,14 +16,13 @@ public class AuthorController {
 
     private final AuthorService authorService;
 
-
     public AuthorController(AuthorService authorService) {
         this.authorService = authorService;
     }
 
     @GetMapping
     public List<AuthorDto> getAuthors() {
-        return authorService.getAllAuthors();
+        return authorService.getAuthors();
     }
 
     @GetMapping("/{id}")
@@ -36,17 +35,17 @@ public class AuthorController {
        return authorService.addAuthorToBook(authorAddDto);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public String deleteAuthor(@PathVariable Integer id){
         return authorService.deleteAuthor(id);
     }
 
-    @PatchMapping
-    public AuthorDto editAuthorName(@RequestBody EditAuthorDto editAuthorDto){
-        return authorService.editAuthorName(editAuthorDto);
+    @PatchMapping("/{id}")
+    public AuthorDto editAuthorName(@PathVariable Integer id, @RequestBody EditAuthorDto editAuthorDto){
+        return authorService.editAuthorName(id, editAuthorDto);
     }
 
-    @PostMapping("/searchAuthor")
+    @PostMapping("/search-author")
     public List<AuthorDto> searchAuthorByAuthorName(@RequestBody AuthorDto authorDto){
         return authorService.searchAuthorByAuthorName(authorDto);
     }

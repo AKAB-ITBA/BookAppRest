@@ -1,6 +1,7 @@
 package org.example.bookapprest.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.bookapprest.mapper.BookMapper;
 import org.example.bookapprest.model.dto.AuthorAddDto;
 import org.example.bookapprest.model.dto.AuthorDto;
 import org.example.bookapprest.model.dto.BookDto;
@@ -24,8 +25,10 @@ public class AuthorServiceImpl implements AuthorService {
 
     private final BookRepositoryJpa bookRepositoryJpa;
 
+    //private final BookMapper bookMapper;
+
     @Override
-    public List<AuthorDto> getAllAuthors() {
+    public List<AuthorDto> getAuthors() {
         List<Author> authors = authorRepositoryJpa.findAll();
         return toAuthorDtoList(authors);
     }
@@ -41,7 +44,7 @@ public class AuthorServiceImpl implements AuthorService {
         return toAuthorDto(author);
     }
 
-    @Override
+   /* @Override
     public BookDto addAuthorToBook(AuthorAddDto authorAddDto) {
         Book book = bookRepositoryJpa.getBookById(authorAddDto.getBookId());
         Author author = authorRepositoryJpa.findAuthorByAuthorName(authorAddDto.getAuthorName());
@@ -61,55 +64,79 @@ public class AuthorServiceImpl implements AuthorService {
         return bookService.toBookDto(book);
 
 
-       /* if(authorRepositoryJpa.save(author) != null
+       *//* if(authorRepositoryJpa.save(author) != null
                 && bookRepositoryJpa.save(book) != null){
             return "Author adding process completed successfully!";
         }else {
             throw new RuntimeException( "Something goes wrong when adding Author to this book");
-        }*/
+        }*//*
+    }*/
+
+    @Override
+    public BookDto addAuthorToBook(AuthorAddDto authorAddDto) {
+        Book book = bookRepositoryJpa.getBookById(authorAddDto.getBookId());
+        Author author = authorRepositoryJpa.findAuthorByAuthorName(authorAddDto.getAuthorName());
+
+        if (author == null) {
+            author = new Author();
+            author.setAuthorName(authorAddDto.getAuthorName());
+            book.getAuthors().add(author);
+            author.getBooks().add(book);
+        } else {
+            book.getAuthors().add(author);
+            author.getBooks().add(book);
+        }
+        authorRepositoryJpa.save(author);
+        bookRepositoryJpa.save(book);
+        return BookMapper.INSTANCE.toBookDto(book);
     }
 
     @Override
     public String deleteAuthor(Integer id) {
-        Author author = authorRepositoryJpa.findAuthorById(id);
+        /*Optional<Author> authorOptional = authorRepositoryJpa.findById(id);
+        Author author = new Author();
+        if (authorOptional.isPresent()) {
+            author = authorOptional.get();
+        }*/
+        Author author = findAuthorById(id);
         List<Book> books = author.getBooks();
-        String result = "";
+        String deleteResult = "";
         for (Book book : books) {
-            int bookCount = book.getAuthors().size();
+            int authorCount = book.getAuthors().size();
+            book.getAuthors().remove(author);
 
-            if (bookCount == 1) {
-                book.getAuthors().remove(author);
+            if (authorCount == 1) {
                 bookRepositoryJpa.delete(book);
-                result = "Author with one Book was ";
+                deleteResult = "Author with one Book was ";
             } else {
-                book.getAuthors().remove(author);
-                result = "Author with several Books was ";
+                deleteResult = "Author with several Books was ";
             }
         }
         authorRepositoryJpa.delete(author);
-        return result + "deleted";
+        return deleteResult + "deleted";
     }
 
     @Override
-    public AuthorDto editAuthorName(EditAuthorDto editAuthorDto) {
-        Author author = authorRepositoryJpa.findAuthorById(editAuthorDto.getAuthorId());
+    public AuthorDto editAuthorName(Integer id, EditAuthorDto editAuthorDto) {
+        /*Optional<Author> authorOptional = authorRepositoryJpa.findById(id);
+        Author author = new Author();
+        if (authorOptional.isPresent()) {
+            author = authorOptional.get();
+        }*/
+        Author author = findAuthorById(id);
         author.setAuthorName(editAuthorDto.getAuthorName());
-        Author resultAuthor = authorRepositoryJpa.save(author);
-        AuthorDto authorDto = new AuthorDto();
-        authorDto.setAuthorName(resultAuthor.getAuthorName());
-        return authorDto;
+        author = authorRepositoryJpa.save(author);
+        return toAuthorDto(author);
     }
 
     @Override
     public List<AuthorDto> searchAuthorByAuthorName(AuthorDto authorDto) {
         String value = "%".concat(authorDto.getAuthorName()).concat("%");
         List<Author> authors = authorRepositoryJpa.findByAuthorNameLike(value);
-        List<AuthorDto> authorDtoList = authors.stream().map(this::toAuthorDto).toList();
         if (authors.isEmpty()) {
-            return null;
-        } else {
-            return authorDtoList;
+            return new ArrayList<>();
         }
+        return toAuthorDtoList(authors);
     }
 
     public Author findAuthorById(Integer id) {

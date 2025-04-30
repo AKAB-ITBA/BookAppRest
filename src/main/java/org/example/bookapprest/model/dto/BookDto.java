@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookDto {
-    private String title;
+    private String bookName;
     private String publishedDate;
     private String genre;
     private String isbn;
