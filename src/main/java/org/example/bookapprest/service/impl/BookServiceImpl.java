@@ -1,6 +1,8 @@
 package org.example.bookapprest.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.bookapprest.exception.BookNotFoundException;
 import org.example.bookapprest.mapper.BookMapper;
 import org.example.bookapprest.model.dto.AuthorDto;
 import org.example.bookapprest.model.dto.BookDto;
@@ -12,7 +14,6 @@ import org.example.bookapprest.repository.AuthorRepositoryJpa;
 import org.example.bookapprest.repository.BookRepositoryJpa;
 import org.example.bookapprest.service.BookService;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookServiceImpl implements BookService {
 
     private final BookRepositoryJpa bookRepositoryJpa;
@@ -34,8 +36,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto getBookById(Integer id) {
+        /*try {*/
         Book book = findBookById(id);
         return BookMapper.INSTANCE.toBookDto(book);
+       /* } catch (BookNotFoundException exception) {
+            log.error("getBookById.exception: {}", exception.getMessage());
+        } catch (Exception exception) {
+            log.error("getBookById.exception: {}", exception.getMessage());
+        }
+        return null;*/
     }
 
     @Override
@@ -62,7 +71,6 @@ public class BookServiceImpl implements BookService {
     public List<BookDto> searchBook(String value, String param) {
         List<Book> books = new ArrayList<>();
         String resultValue = "%".concat(value).concat("%");
-
         if ("title".equals(param)) {
             books = bookRepositoryJpa.findByTitleLike(resultValue);
         } else if (param.equals("genre")) {
@@ -70,7 +78,7 @@ public class BookServiceImpl implements BookService {
         } else if (param.equals("isbn")) {
             books = bookRepositoryJpa.findByIsbnLike(resultValue);
         } else if (param.equals("author")) {
-            books =bookRepositoryJpa.findByAuthorsLike(resultValue);
+            books = bookRepositoryJpa.findByAuthorsLike(resultValue);
         }
 
         List<BookDto> bookDtoList = toBookDtoList(books);
@@ -105,7 +113,7 @@ public class BookServiceImpl implements BookService {
         return authorDtoList.stream().map(this::toAuthor).toList();
     }
 
-    private Author toAuthor(AuthorDto authorDto){
+    private Author toAuthor(AuthorDto authorDto) {
         return authorRepositoryJpa.findAuthorByAuthorName(authorDto.getAuthorName());
     }
 
@@ -128,6 +136,10 @@ public class BookServiceImpl implements BookService {
 
     private Book findBookById(Integer id) {
         Optional<Book> bookOptional = bookRepositoryJpa.findById(id);
-        return bookOptional.orElse(new Book());
+        if (bookOptional.isPresent()) {
+            return bookOptional.get();
+        }
+        throw new BookNotFoundException("book not found with given id: " + id, BookServiceImpl.class.getName());
+        //return bookOptional.orElse(new Book());
     }
 }

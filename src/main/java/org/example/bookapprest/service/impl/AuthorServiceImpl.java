@@ -1,6 +1,8 @@
 package org.example.bookapprest.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.bookapprest.exception.AuthorNotFoundException;
 import org.example.bookapprest.mapper.BookMapper;
 import org.example.bookapprest.model.dto.AuthorAddDto;
 import org.example.bookapprest.model.dto.AuthorDto;
@@ -19,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthorServiceImpl implements AuthorService {
 
     private final AuthorRepositoryJpa authorRepositoryJpa;
@@ -74,9 +77,11 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public BookDto addAuthorToBook(AuthorAddDto authorAddDto) {
+        log.debug("addAuthorToBook is started with name: {}, bookId: {}",
+                authorAddDto.getAuthorName(), authorAddDto.getBookId());
+
         Book book = bookRepositoryJpa.getBookById(authorAddDto.getBookId());
         Author author = authorRepositoryJpa.findAuthorByAuthorName(authorAddDto.getAuthorName());
-
         if (author == null) {
             author = new Author();
             author.setAuthorName(authorAddDto.getAuthorName());
@@ -88,7 +93,10 @@ public class AuthorServiceImpl implements AuthorService {
         }
         authorRepositoryJpa.save(author);
         bookRepositoryJpa.save(book);
-        return BookMapper.INSTANCE.toBookDto(book);
+        BookDto bookDto = BookMapper.INSTANCE.toBookDto(book);
+
+        log.trace("addAuthorToBook is ended");
+        return bookDto;
     }
 
     @Override
@@ -131,6 +139,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<AuthorDto> searchAuthorByAuthorName(AuthorDto authorDto) {
+
         String value = "%".concat(authorDto.getAuthorName()).concat("%");
         List<Author> authors = authorRepositoryJpa.findByAuthorNameLike(value);
         if (authors.isEmpty()) {
@@ -141,7 +150,11 @@ public class AuthorServiceImpl implements AuthorService {
 
     public Author findAuthorById(Integer id) {
         Optional<Author> authorOptional = authorRepositoryJpa.findById(id);
-        return authorOptional.orElse(new Author());
+        if (authorOptional.isPresent()) {
+            return authorOptional.get();
+        }
+        throw new AuthorNotFoundException("author not found with given id: " + id);
+        //return authorOptional.orElse(new Author());
     }
 
     private List<AuthorDto> toAuthorDtoList(List<Author> authors) {

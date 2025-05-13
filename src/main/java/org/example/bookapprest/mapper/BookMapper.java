@@ -18,8 +18,8 @@ public interface BookMapper {
     BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
 
     @Mapping(target = "bookName", source = "title")
-    @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapDate")
-    @Mapping(target = "createdAt", expression = "java(DateTimeFormatter.ISO_LOCAL_DATE.format(book.getCreatedAt()))")
+    //@Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "mapDate")
+    //@Mapping(target = "createdAt", expression = "java(DateTimeFormatter.ISO_LOCAL_DATE.format(book.getCreatedAt()))")
     //@Mapping(target = "anyField", constant = "")
     BookDto toBookDto(Book book);
 

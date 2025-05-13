@@ -3,7 +3,12 @@ package org.example.bookapprest.controller;
 import org.example.bookapprest.model.dto.BookDto;
 import org.example.bookapprest.model.dto.CreateBookDto;
 import org.example.bookapprest.model.dto.EditBookDto;
+import org.example.bookapprest.model.rest.RestResponse;
 import org.example.bookapprest.service.BookService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,13 +29,18 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public BookDto getBookById(@PathVariable Integer id) {
-        return bookService.getBookById(id);
+    public RestResponse<BookDto> getBookById(@PathVariable Integer id) {
+        BookDto bookDto = bookService.getBookById(id);
+       /* if (ObjectUtils.isEmpty(bookDto)) {
+            return RestResponse.error();
+        }*/
+        return RestResponse.ok(bookDto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBookById(@PathVariable Integer id) {
+    public RestResponse<Void> deleteBookById(@PathVariable Integer id) {
         bookService.deleteBookById(id);
+        return RestResponse.ok();
     }
 
     @PostMapping
@@ -46,6 +56,7 @@ public class BookController {
     @GetMapping("/search-book")
     public List<BookDto> searchBook(@RequestParam String value,
                                     @RequestParam String param) {
+        /*return new ResponseEntity<>(bookService.searchBook(value, param), HttpStatus.CREATED);*/
         return bookService.searchBook(value, param);
     }
 }
