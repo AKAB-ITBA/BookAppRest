@@ -2,6 +2,7 @@ package org.example.bookapprest.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.bookapprest.exception.BookAlreadyExistException;
 import org.example.bookapprest.exception.BookNotFoundException;
 import org.example.bookapprest.mapper.BookMapper;
 import org.example.bookapprest.model.dto.AuthorDto;
@@ -36,24 +37,28 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto getBookById(Integer id) {
-        /*try {*/
         Book book = findBookById(id);
         return BookMapper.INSTANCE.toBookDto(book);
-       /* } catch (BookNotFoundException exception) {
-            log.error("getBookById.exception: {}", exception.getMessage());
-        } catch (Exception exception) {
-            log.error("getBookById.exception: {}", exception.getMessage());
-        }
-        return null;*/
     }
 
     @Override
     public void deleteBookById(Integer id) {
+        Optional<BookDto> bookDto = Optional.ofNullable(getBookById(id));
+        if(bookDto.isEmpty()){
+            throw new BookNotFoundException("book not found with given id: " + id);
+        }
         bookRepositoryJpa.deleteById(id);
     }
 
     @Override
     public void createBook(CreateBookDto createBookDto) {
+        Optional<List<BookDto>> searchByTitle = Optional.ofNullable(searchBook(createBookDto.getTitle(),"title"));
+        Optional<List<BookDto>> searchByIsbn = Optional.ofNullable(searchBook(createBookDto.getIsbn(),"isbn"));
+        if(searchByTitle.isPresent()){
+            throw new BookAlreadyExistException("title");
+        } else if (searchByIsbn.isPresent()) {
+            throw new BookAlreadyExistException("isbn");
+        }
         bookRepositoryJpa.save(toBook(createBookDto));
     }
 
@@ -86,24 +91,12 @@ public class BookServiceImpl implements BookService {
             return null;
         } else {
             return bookDtoList;
-        } //criteria api
+        }
     }
 
     private List<BookDto> toBookDtoList(List<Book> books) {
         return books.stream().map(BookMapper.INSTANCE::toBookDto).toList();
     }
-
-   /* private BookDto toBookDto(Book book) {
-        BookDto bookDto = new BookDto();
-        bookDto.setTitle(book.getTitle());
-        bookDto.setIsbn(book.getIsbn());
-        bookDto.setGenre(book.getGenre());
-        bookDto.setCreatedAt(ObjectUtils.nullSafeToString(book.getCreatedAt()));
-        bookDto.setUpdatedAt(book.getUpdatedAt().toString());
-        bookDto.setPublishedDate(book.getPublishedDate());
-        bookDto.setAuthors(toAuthorDtoList(book.getAuthors()));
-        return bookDto;
-    }*/
 
     private List<AuthorDto> toAuthorDtoList(List<Author> authors) {
         return authors.stream().map(this::toAuthorDto).toList();
@@ -139,7 +132,6 @@ public class BookServiceImpl implements BookService {
         if (bookOptional.isPresent()) {
             return bookOptional.get();
         }
-        throw new BookNotFoundException("book not found with given id: " + id, BookServiceImpl.class.getName());
-        //return bookOptional.orElse(new Book());
+        throw new BookNotFoundException("book not found with given id: " + id);
     }
 }

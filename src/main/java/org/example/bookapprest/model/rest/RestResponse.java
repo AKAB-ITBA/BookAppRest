@@ -29,12 +29,12 @@ public class RestResponse<T> {
         return restResponse;
     }
 
-    public static <T> RestResponse<T> error() {
+    /*public static <T> RestResponse<T> error() {
         RestResponse<T> restResponse = new RestResponse<>();
         restResponse.code = 404;
         restResponse.success = false;
         restResponse.message = "error";
         return restResponse;
-    }
+    }*/
 
 }

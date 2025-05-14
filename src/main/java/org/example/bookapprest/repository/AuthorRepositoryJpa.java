@@ -7,11 +7,7 @@ import java.util.List;
 
 public interface AuthorRepositoryJpa extends JpaRepository<Author, Integer> {
 
-    List<Author> findAllByOrderById();
-
     Author findAuthorByAuthorName(String authorName);
-
-    //Author findAuthorById(int id);
 
     List<Author> findByAuthorNameLike(String authorName);
 }
