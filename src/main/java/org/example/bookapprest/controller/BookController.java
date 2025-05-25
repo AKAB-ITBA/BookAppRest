@@ -1,19 +1,29 @@
 package org.example.bookapprest.controller;
 
-import org.example.bookapprest.exception.BookAlreadyExistException;
-import org.example.bookapprest.exception.BookCantBeSavedException;
-import org.example.bookapprest.exception.LackOfParameterException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.example.bookapprest.model.dto.BookDto;
 import org.example.bookapprest.model.dto.CreateBookDto;
 import org.example.bookapprest.model.dto.EditBookDto;
 import org.example.bookapprest.model.rest.RestResponse;
 import org.example.bookapprest.service.BookService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/books")
+@Validated
 public class BookController {
 
     private final BookService bookService;
@@ -40,25 +50,9 @@ public class BookController {
     }
 
     @PostMapping
-    public void createBook(@RequestBody CreateBookDto createBookDto) {
-        try {
-            if (createBookDto.getAuthors().isEmpty()) {
-                throw new BookCantBeSavedException("book without author cant be created");
-            } else if (createBookDto.getIsbn().isEmpty()) {
-                throw new BookCantBeSavedException("book without isbn code cant be created");
-            } else if (createBookDto.getGenre().isEmpty()) {
-                throw new BookCantBeSavedException("book without genre code cant be created");
-            } else if (createBookDto.getTitle().isEmpty()) {
-                throw new BookCantBeSavedException("book without title code cant be created");
-            } else if (createBookDto.getPublishedDate().isEmpty()) {
-                throw new BookCantBeSavedException("book without published date code cant be created");
-            }
-            bookService.createBook(createBookDto);
-        } catch (BookAlreadyExistException ex) {
-            throw new BookAlreadyExistException("book with this " + ex.getMessage() + " already exist");
-        } catch (NullPointerException e) {
-            throw new LackOfParameterException();
-        }
+    public String createBook(@RequestBody @Valid CreateBookDto createBookDto) {
+        bookService.createBook(createBookDto);
+        return createBookDto.getPhoneNumber();
     }
 
     @PutMapping("/{id}")
@@ -67,8 +61,8 @@ public class BookController {
     }
 
     @GetMapping("/search-book")
-    public List<BookDto> searchBook(@RequestParam String value,
-                                    @RequestParam String param) {
+    public List<BookDto> searchBook(@RequestParam @NotBlank String value,
+                                    @RequestParam @Size(min = 2, max = 6) String param) {
         return bookService.searchBook(value, param);
     }
 }

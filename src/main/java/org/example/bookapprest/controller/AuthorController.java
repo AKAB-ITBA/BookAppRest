@@ -38,14 +38,15 @@ public class AuthorController {
     @PostMapping
     public BookDto addAuthorToBook(@RequestBody AuthorAddDto authorAddDto) {
         try {
-            if(authorAddDto.getAuthorName().isEmpty()){
+            if (authorAddDto.getAuthorName().isEmpty()) {
                 throw new AuthorCantBeAddedException("author without author's name cant be added");
             } else if (authorAddDto.getBookId().toString().isEmpty()) {
                 throw new AuthorCantBeAddedException("author without book id cant be added");
-            }return authorService.addAuthorToBook(authorAddDto);
-        }catch (AuthorAlreadyJoinedException ex){
+            }
+            return authorService.addAuthorToBook(authorAddDto);
+        } catch (AuthorAlreadyJoinedException ex) {
             throw new AuthorAlreadyJoinedException(ex.getMessage());
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new LackOfParameterException();
         }
 
@@ -55,7 +56,7 @@ public class AuthorController {
     public String deleteAuthor(@PathVariable Integer id) {
         try {
             return authorService.deleteAuthor(id);
-        }catch (NullPointerException ex){
+        } catch (NullPointerException ex) {
             throw new LackOfParameterException();
         }
 

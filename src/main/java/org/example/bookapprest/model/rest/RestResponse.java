@@ -2,7 +2,6 @@ package org.example.bookapprest.model.rest;
 
 import lombok.Data;
 
-import java.util.Map;
 
 @Data
 public class RestResponse<T> {
@@ -28,13 +27,4 @@ public class RestResponse<T> {
         restResponse.message = "success";
         return restResponse;
     }
-
-    /*public static <T> RestResponse<T> error() {
-        RestResponse<T> restResponse = new RestResponse<>();
-        restResponse.code = 404;
-        restResponse.success = false;
-        restResponse.message = "error";
-        return restResponse;
-    }*/
-
 }

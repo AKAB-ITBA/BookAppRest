@@ -51,8 +51,8 @@ public class AuthorServiceImpl implements AuthorService {
         Book book = bookRepositoryJpa.getBookById(authorAddDto.getBookId());
         Author author = authorRepositoryJpa.findAuthorByAuthorName(authorAddDto.getAuthorName());
         List<Author> authors = book.getAuthors();
-        for (Author a: authors){
-            if(a.equals(author)){
+        for (Author a : authors) {
+            if (a.equals(author)) {
                 throw new AuthorAlreadyJoinedException("this author already exist on that book");
             }
         }
@@ -71,7 +71,7 @@ public class AuthorServiceImpl implements AuthorService {
         Optional<BookDto> bookDtoOpt = Optional.ofNullable(bookDto);
         if (bookDtoOpt.isPresent()) {
             return bookDto;
-        }else {
+        } else {
             throw new AuthorNotSavedException("author not found with given parameters ");
         }
     }
