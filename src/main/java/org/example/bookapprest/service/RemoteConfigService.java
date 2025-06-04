@@ -2,7 +2,7 @@ package org.example.bookapprest.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.auth.oauth2.OAuth2Credentials;
+import lombok.extern.slf4j.Slf4j;
 import org.example.bookapprest.model.remoteconfig.RemoteConfig;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,7 @@ import java.net.http.HttpResponse;
 import java.util.Collections;
 
 @Service
+@Slf4j
 public class RemoteConfigService {
 
     private static final String PROJECT_ID = "remote-config-test-app-5f2d4";
@@ -52,8 +53,9 @@ public class RemoteConfigService {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("Response status: " + response.statusCode());
-        System.out.println("Response body: " + response.body());
+        log.info("Response status: {}", response.statusCode());
+        log.info("Response body: {}", response.body());
+
 
         if (response.statusCode() != 200) {
             throw new RuntimeException("Firebase Remote Config update failed: " + response.body());
@@ -61,10 +63,6 @@ public class RemoteConfigService {
     }
 
     public String getRemoteConfig() throws IOException, InterruptedException {
-        GoogleCredentials credentials = GoogleCredentials
-                .fromStream(new FileInputStream(CREDENTIALS_PATH))
-                .createScoped(Collections.singletonList("https://www.googleapis.com/auth/firebase.remoteconfig"));
-
         credentials.refreshIfExpired();
         String accessToken = credentials.getAccessToken().getTokenValue();
 
