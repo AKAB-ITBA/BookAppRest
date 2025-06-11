@@ -1,9 +1,9 @@
-package org.example.bookapprest.model.remoteconfig;
+package org.example.bookapprest.model.remoteconfig.response;
 
 import lombok.Data;
 
 @Data
-public class RemoteCondition {
+public class RemoteConditionRes {
     private String name;
     private String expression;
     private String tagColor;

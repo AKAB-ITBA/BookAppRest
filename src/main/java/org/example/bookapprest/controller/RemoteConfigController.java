@@ -1,7 +1,8 @@
 package org.example.bookapprest.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookapprest.model.remoteconfig.RemoteConfig;
+import org.example.bookapprest.model.remoteconfig.request.RemoteConfigReq;
+import org.example.bookapprest.model.remoteconfig.response.RemoteConfigRes;
 import org.example.bookapprest.service.RemoteConfigService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,14 @@ public class RemoteConfigController {
     private final RemoteConfigService remoteConfigService;
 
     @PostMapping("/update")
-    public ResponseEntity<String> updateRemoteConfig(@RequestBody RemoteConfig remoteConfig) {
+    public ResponseEntity<String> updateRemoteConfig(@RequestBody RemoteConfigReq remoteConfig) {
         try {
             remoteConfigService.updateRemoteConfig(remoteConfig);
             return ResponseEntity.ok("Remote config updated successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
+
     }
 
 
