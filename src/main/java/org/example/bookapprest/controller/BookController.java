@@ -44,7 +44,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public RestResponse<Void> deleteBookById(@PathVariable Integer id) {
+    public RestResponse<Void> deleteBookById(@PathVariable @NotBlank Integer id) {
         bookService.deleteBookById(id);
         return RestResponse.ok();
     }

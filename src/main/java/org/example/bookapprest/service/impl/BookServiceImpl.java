@@ -15,6 +15,7 @@ import org.example.bookapprest.repository.AuthorRepositoryJpa;
 import org.example.bookapprest.repository.BookRepositoryJpa;
 import org.example.bookapprest.service.BookService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,24 +38,28 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto getBookById(Integer id) {
+        //log.info("getBookById.start {}", id);
         Book book = findBookById(id);
-        return BookMapper.INSTANCE.toBookDto(book);
+        BookDto bookDto = BookMapper.INSTANCE.toBookDto(book);
+        //log.info("getBookById.end {}", bookDto);
+        return bookDto;
     }
 
     @Override
     public void deleteBookById(Integer id) {
         Optional<BookDto> bookDto = Optional.ofNullable(getBookById(id));
-        if(bookDto.isEmpty()){
+        if (bookDto.isEmpty()) {
             throw new BookNotFoundException("book not found with given id: " + id);
         }
         bookRepositoryJpa.deleteById(id);
     }
 
     @Override
+    @Transactional
     public void createBook(CreateBookDto createBookDto) {
-        Optional<List<BookDto>> searchByTitle = Optional.ofNullable(searchBook(createBookDto.getTitle(),"title"));
-        Optional<List<BookDto>> searchByIsbn = Optional.ofNullable(searchBook(createBookDto.getIsbn(),"isbn"));
-        if(searchByTitle.isPresent()){
+        Optional<List<BookDto>> searchByTitle = Optional.ofNullable(searchBook(createBookDto.getTitle(), "title"));
+        Optional<List<BookDto>> searchByIsbn = Optional.ofNullable(searchBook(createBookDto.getIsbn(), "isbn"));
+        if (searchByTitle.isPresent()) {
             throw new BookAlreadyExistException("title");
         } else if (searchByIsbn.isPresent()) {
             throw new BookAlreadyExistException("isbn");

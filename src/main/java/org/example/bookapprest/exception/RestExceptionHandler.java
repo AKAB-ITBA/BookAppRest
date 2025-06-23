@@ -1,6 +1,5 @@
 package org.example.bookapprest.exception;
 
-import jakarta.validation.ConstraintDefinitionException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,7 @@ public class RestExceptionHandler extends DefaultErrorAttributes {
     @ExceptionHandler(BookNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handle(BookNotFoundException ex,
                                                       WebRequest request) {
-        log.error("BookNotFoundException occurred {}", ex.getMessage());
+        //log.error("BookNotFoundException occurred {}", ex.getMessage());
         return ofType(request, HttpStatus.NOT_FOUND, ex.getMessage());
     }
 

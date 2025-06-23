@@ -30,7 +30,6 @@ public class RemoteConfigController {
 
     }
 
-
     @GetMapping
     public ResponseEntity<String> getRemoteConfig() {
         try {

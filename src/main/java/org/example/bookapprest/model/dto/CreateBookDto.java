@@ -37,5 +37,4 @@ public class CreateBookDto {
     @NotEmpty
     private List<AuthorDto> authors;
 
-
 }
