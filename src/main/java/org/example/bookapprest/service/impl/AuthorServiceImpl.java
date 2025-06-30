@@ -15,6 +15,8 @@ import org.example.bookapprest.model.entity.Book;
 import org.example.bookapprest.repository.AuthorRepositoryJpa;
 import org.example.bookapprest.repository.BookRepositoryJpa;
 import org.example.bookapprest.service.AuthorService;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
