@@ -8,6 +8,7 @@ import org.example.bookapprest.model.dto.CreateBookDto;
 import org.example.bookapprest.model.dto.EditBookDto;
 import org.example.bookapprest.model.rest.RestResponse;
 import org.example.bookapprest.service.BookService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,6 +51,7 @@ public class BookController {
     }
 
     @PostMapping
+    //@PreAuthorize("hasRole('DELETE')")
     public String createBook(@RequestBody @Valid CreateBookDto createBookDto) {
         bookService.createBook(createBookDto);
         return createBookDto.getPhoneNumber();
